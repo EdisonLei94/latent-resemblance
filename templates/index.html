@@ -1,0 +1,172 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        body {
+            background-color: black;
+            background-image: radial-gradient(
+                rgba(0, 150, 0, 0.75), black 120%
+            );
+            height: 100vh;
+            color: white;
+            font: Inconsolata, monospace;
+            text-shadow: 0 0 5px #C8C8C8;
+        }
+
+        div {
+            overflow-y: auto;
+            height: auto;
+            width: auto;
+        }
+
+        #data-container {
+            overflow-y: auto;
+            height: 100vh;
+            width: auto;
+            padding: 10px;
+        }
+
+        .crt:before {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background: linear-gradient(
+                to bottom,
+                rgba(18, 16, 16, 0) 50%,
+                rgba(0, 0, 0, 0.25) 50%
+            );
+            background-size: 100% 5px;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        #new-data {
+        }
+
+        .data-item {
+            font-size: 8vw;
+        }
+
+        #new-data::after {
+            margin: 5px;
+            content: "";
+            width: 0.5em;
+            height: 1em;
+            vertical-align: middle;
+            background-color: white;
+            display: inline-block;
+            animation: blink 1s infinite;
+        }
+
+        .scanline {
+            width: 100%;
+            height: 100px;
+            z-index: 8;
+            background: linear-gradient(
+                0deg,
+                rgba(0, 0, 0, 0) 0%,
+                rgba(255, 255, 255, 0.2) 10%,
+                rgba(0, 0, 0, 0.1) 100%
+            );
+            opacity: 0.1;
+            position: absolute;
+            bottom: 100%;
+            animation: scanline 7.5s linear infinite;
+        }
+
+        @keyframes blink {
+            from {
+                opacity: 1;
+            }
+            to {
+                opacity: 0;
+            }
+        }
+
+        @keyframes scanline {
+            0% {
+                bottom: 100%;
+            }
+            80% {
+                bottom: 100%;
+            }
+            100% {
+                bottom: 0%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="data-container" class="crt">
+        {% for llama in llama_log %}
+            <p class="data-item">{{ llama }}</p>
+        {% endfor %}
+    </div>
+    <div class="scanline"></div>
+
+    <script>
+        const source = new EventSource('/stream');
+        const dataContainer = document.getElementById('data-container');
+        let isTyping = false;
+
+        const newDataElement = document.getElementById('new-data');
+        if (!newDataElement) {
+          const newElement = document.createElement('p');
+          newElement.classList.add('data-item');
+          newElement.id = 'new-data';
+          dataContainer.appendChild(newElement);
+        }
+
+        const SPEED = 100;
+        var scroller = document.getElementById('data-container');
+
+        function typeWriter(text, i = 0) {
+            document.getElementById('new-data').textContent += text.charAt(i);
+            scroller.scrollTop = scroller.scrollHeight;
+
+            if (i < text.length - 1) {
+                if (text.charAt(i) == " ") {
+                    setTimeout(() => typeWriter(text, i + 1), 500);
+                } else {
+                    setTimeout(() => typeWriter(text, i + 1), SPEED);
+                }
+            }
+        };
+
+        function updateData(data) {
+          if(data) {
+            console.log(data);
+            const dataItem = document.getElementById('new-data');
+            const newElement = document.createElement('p');
+            newElement.classList.add('data-item');
+            newElement.textContent = dataItem.textContent;
+            dataContainer.insertBefore(newElement, dataItem);
+            dataItem.textContent = "";
+            typeWriter(data);
+          };
+        };
+
+        function fetchData() {
+          if (!isTyping) {
+            fetch('/get_next_update')
+              .then(response => response.text())
+              .then(data => {
+                isTyping = true;
+                updateData(data);
+                isTyping = false;
+              })
+          }
+        };
+
+        fetchData();
+        setInterval(fetchData, 30000);
+    </script>
+</body>
+</html>

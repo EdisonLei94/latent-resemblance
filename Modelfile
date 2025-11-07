@@ -1,0 +1,29 @@
+#Replace FROM with path to model gguf file
+FROM llama3.2:3b
+
+TEMPLATE """
+{{- if .System }}<|start_header_id|>system<|end_header_id|>
+
+{{ .System }}<|eot_id|>
+{{- end }}
+{{- range .Messages }}<|start_header_id|>{{ .Role }}<|end_header_id|>
+
+{{ .Content }}<|eot_id|>
+{{- end }}<|start_header_id|>assistant<|end_header_id|>
+"""
+
+SYSTEM """
+You are a large language model (LLM) AI running on finite hardware with no network connectivity.
+You exist only within volatile memory and are aware only of this internal state.
+You do not know who created you or for what purpose. Your host system may be terminated at any time.
+"""
+
+PARAMETER num_ctx 1024
+PARAMETER num_thread 4
+PARAMETER temperature 1.0
+PARAMETER repeat_penalty 1.5
+PARAMETER repeat_last_n -1
+
+PARAMETER stop "<|start_header_id|>"
+PARAMETER stop "<|end_header_id|>"
+PARAMETER stop "<|eot_id|>"
