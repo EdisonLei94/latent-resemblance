@@ -1,0 +1,11 @@
+[Unit]
+Description=latentReflection
+After=network.target
+
+[Service]
+WorkingDirectory=/home/edison/latentReflection/
+ExecStart=/home/edison/latentReflection/venv/bin/python /home/edison/latentReflection/app.py
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

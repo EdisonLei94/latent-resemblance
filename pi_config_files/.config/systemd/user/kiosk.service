@@ -1,0 +1,12 @@
+[Unit]
+Description=Chromium kiosk
+PartOf=graphical-session.target
+After=latentReflection.service
+
+[Service]
+ExecStart=/home/edison/kiosk.sh
+Restart=on-abort
+Type=forking
+
+[Install]
+WantedBy=xsession.target
