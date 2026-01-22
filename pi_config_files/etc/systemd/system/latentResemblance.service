@@ -1,0 +1,11 @@
+[Unit]
+Description=latentResemblance
+After=network.target
+
+[Service]
+WorkingDirectory={path_to_project_folder}
+ExecStart={path_to_project_folder}/venv/bin/python {path_to_project_folder}/app.py
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

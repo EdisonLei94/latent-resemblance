@@ -7,8 +7,7 @@ A Llama3.2-3b model contained on a raspberrypi 4 using the Ollama python library
 Two services are configured on the pi to run the app and display a Chromium webpage in kiosk mode on boot.
 
 ## Prerequisites
-
-
+Ollama
 
 ## Installation
 
@@ -54,7 +53,17 @@ python -m pip install -r requirements.txt
 
     Navigate to `http://127.0.0.1:5000` within a browser window. The application should begin displaying the inference output from the model line by line.
 
-## Readme TODO
-### 1. Ollama setup
-### 2. Creating the systemd service files on the Pi
-### 3. Autostart kiosk mode configuration
+## Raspberry Pi configuration
+1. Move or copy the latentResemblance.service file to `/etc/systemd/system/latentResemblance.service`. You will need to replace the paths denoted by `{}` with the appropriate file paths.
+2. Move or copy the kiosk.service file to `$HOME/.config/systemd/user/kiosk.service`. You will need to replace the `{path_to_kiosk.sh_script}` with the appropriate path.
+3. Move or copy the autostart file to `$HOME/.config/lxsession/LXDE-pi/autostart`.
+4. After these steps:
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable latentResemblance
+sudo systemctl start latentResemblance
+sudo systemctl --user daemon-reload
+sudo systemctl --user enable kiosk
+sudo systemctl --user start kiosk
+```
+5. Restart the Raspberry Pi. The latentResemblance service should autostart, shortly followed by the kiosk service.

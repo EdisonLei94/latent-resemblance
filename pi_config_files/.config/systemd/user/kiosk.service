@@ -1,10 +1,10 @@
 [Unit]
 Description=Chromium kiosk
 PartOf=graphical-session.target
-After=latentReflection.service
+After=latentResemblance.service
 
 [Service]
-ExecStart=/home/edison/kiosk.sh
+ExecStart={path_to_kiosk.sh_script}
 Restart=on-abort
 Type=forking
 
