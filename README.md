@@ -1,6 +1,6 @@
 # latent-resemblance
 
-An attempt at creating a reproduction of Latent Reflection by RootKid, with some small adjustments.
+A reproduction of Latent Reflection by RootKid, with some small adjustments.
 All credit for the idea and inspiration goes to RootKid.
 
 A Llama3.2-3b model contained on a raspberrypi 4 using the Ollama python library. The generate output is served via a simple Flask app and displayed on a small monitor.
